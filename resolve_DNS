@@ -1,0 +1,64 @@
+The following procedure will help in resolving the DNS while working with DOCKER containers.
+
+    # docker run busybox ping -c 2 192.203.230.10
+    PING 192.203.230.10 (192.203.230.10): 56 data bytes
+    64 bytes from 192.203.230.10: seq=0 ttl=56 time=66.724 ms
+    64 bytes from 192.203.230.10: seq=1 ttl=56 time=54.786 ms
+    --- 192.203.230.10 ping statistics ---
+    2 packets transmitted, 2 packets received, 0% packet loss
+    round-trip min/avg/max = 45.815/56.947/66.724 ms
+
+When you try to ping to google.com using the container it fails to reach as it is unable to resolve the DNS.
+   
+    # docker run busybox nslookup google.com
+    Server:    8.8.8.8
+    Address 1: 8.8.8.8
+    nslookup: can't resolve 'google.com'
+
+Find out the DNS server used in your machine :
+
+       # nm-tool  |grep DNS
+        DNS:             172.24.100.50
+        DNS:             10.1.100.50
+        
+Run it again using DNS IP found in the above step which resolves the DNS:
+
+    # docker run --dns 172.24.100.50 busybox nslookup google.com
+    Server:    172.24.100.50
+    Address 1: 172.24.100.50 indc01.radisys.com
+    Name:      google.com
+    Address 1: 2607:f8b0:4009:80c::200e ord36s01-in-x0e.1e100.net
+    Address 2: 172.217.4.110 ord36s04-in-f14.1e100.net
+    
+To resolve it permanently add the following content as below to a new file: 
+
+    # cat /etc/docker/daemon.json
+    {
+        "dns" : ["172.24.100.50", "8.8.8.8"]
+    }
+
+More info on Docker DNS configuration : https://docs.docker.com/engine/userguide/networking/configure-dns/
+
+Restart the docker service :
+    # sudo service docker restart
+    docker stop/waiting
+    docker start/running, process 22291
+    root@labadmin-VirtualBox:/home/labadmin# docker run busybox nslookup google.com
+    Server:    172.24.100.50
+    Address 1: 172.24.100.50 indc01.radisys.com
+    Name:      google.com
+    Address 1: 2607:f8b0:4009:801::200e ord30s31-in-x0e.1e100.net
+    Address 2: 172.217.4.238 ord30s31-in-f14.1e100.net
+
+Check it by running the container:
+
+    # docker run -it e02e811dd08f
+    / # ping google.com
+    PING google.com (172.217.4.238): 56 data bytes
+    64 bytes from 172.217.4.238: seq=0 ttl=47 time=251.506 ms
+    64 bytes from 172.217.4.238: seq=1 ttl=47 time=245.621 ms
+    ^C
+    --- google.com ping statistics ---
+    2 packets transmitted, 2 packets received, 0% packet loss
+    round-trip min/avg/max = 245.621/257.113/272.586 ms
+    / #
