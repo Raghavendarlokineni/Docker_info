@@ -1,0 +1,24 @@
+# python requests_docker.py all
+
+         *************************************************************************************
+                  IP ADDR                    127.0.0.1 
+                  TOTAL IMAGES               None
+                  TOTAL CONTAINERS           7
+                  RUNNING CONTAINERS         2   
+                  STOPPED CONTAINERS         0
+                  PAUSED CONTAINERS          5 
+         *************************************************************************************
+         
++-----------------+--------------+---------+------------+
+|  Container Name | Container ID |  Status |  IP ADDR   |
++-----------------+--------------+---------+------------+
+|  boring_babbage | a8a099cd4569 | running | 172.17.0.3 |
+| relaxed_mcnulty | d32d0f4008d6 | running | 172.17.0.2 |
+|     my-work3    | 96fdd2d0367d |  exited |            |
+|     my-work2    | 6dddbcc72c9d |  exited |            |
+|     my-work1    | dc88dd0c523b |  exited |            |
+|  gifted_liskov  | 3a48af5eaec9 |  exited |            |
+|  hungry_turing  | 58246867493d |  exited |            |
++-----------------+--------------+---------+------------+
+None
+
