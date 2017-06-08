@@ -1,0 +1,31 @@
+There are 2 ways to configure docker daemon port:
+
+1) Configuring at /etc/default/docker file:
+
+DOCKER_OPTS="-H tcp://127.0.0.1:5000 -H unix:///var/run/docker.sock"
+
+2) Configuring at /etc/docker/daemon.json:
+
+{
+"debug": true,
+"hosts": ["tcp://127.0.0.1:5000", "unix:///var/run/docker.sock"]
+}
+
+If the docker default socket is not configured Docker will wait for infinite period.
+
+NOTE : BUT DON'T CONFIGURE IN BOTH THE CONFIGURATION FILES, the following error may occur :
+
+Waiting for /var/run/docker.sock
+unable to configure the Docker daemon with file /etc/docker/daemon.json: the following directives are specified both as a flag and 
+in the configuration file: hosts: (from flag: [tcp://127.0.0.1:5000 unix:///var/run/docker.sock], from file: tcp://127.0.0.1:5000)
+
+
+The reason for adding both the user port[ tcp://127.0.0.1:5000] and default docker socket[unix:///var/run/docker.sock] is that the 
+user port enables the access to the docker APIs whereas the default socket enables the CLI. In case the 
+default port[unix:///var/run/docker.sock] is not mentioned in /etc/default/docker file the following error may occur:
+
+# docker ps
+Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
+
+
+This error is not because that the docker is not running, but because of default docker socket is not enabled.
