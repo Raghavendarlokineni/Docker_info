@@ -1,0 +1,69 @@
+#To enable the API you need to configure the docker daemon port and the procedure is explained in 
+#configure_docker_daemon file in this folder
+
+Lets run a container using an base Ubuntu Image and create a folder inside the container:
+
+#docker run -it ubuntu:14.04 /bin/bash
+root@58246867493d:/# 
+root@58246867493d:/# cd /root
+root@58246867493d:~# ls
+root@58246867493d:~# mkdir TEST_DIR
+root@58246867493d:~# exit
+
+Status of the exited container:
+
+# docker ps -a
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                        PORTS               NAMES
+58246867493d        ubuntu:14.04        "/bin/bash"         2 minutes ago       Exited (127) 57 seconds ago                       hungry_turing
+
+Sample JSON file which is an input for committing a container:
+
+#cat container_create.json 
+{
+  "AttachStdin": true,
+  "AttachStdout": true,
+  "AttachStderr": true,
+  "ExposedPorts": {
+    "property1": {},
+    "property2": {}
+  },
+  "Tty": true,
+  "OpenStdin": true,
+  "StdinOnce": true,
+  "Cmd": null,
+  "Image": "ubuntu:14.04",
+  "Volumes": {
+    "additionalProperties": {}
+  },
+  "Labels": {
+    "property1": "string",
+    "property2": "string"
+  }
+}
+
+API to commit a container
+
+# curl -X POST http://127.0.0.1:6000/commit?container=58246867493d\&repo=ubuntu\&tag=15.0 -d @container_create.json --header "Content-Type: application/json" | jq .
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   593  100    81  100   512    175   1106 --:--:-- --:--:-- --:--:--  1108
+{
+  "Id": "sha256:acac1f3733b2240b01e335642d2867585e5933b18de2264315f9b07814de113a"
+}
+
+The Id that is generated is the new Image Id which is build from committing a container.
+
+Get docker Images
+
+# docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+**ubuntu              15.0                acac1f3733b2        10 seconds ago      188MB**
+ubuntu              14.04               132b7427a3b4        10 hours ago        188MB
+
+Run the newly build Image to see the changes commited in the previous container.
+
+# docker run -it ubuntu:15.0 /bin/bash
+root@3a48af5eaec9:/# cd /root/
+root@3a48af5eaec9:~# ls
+TEST_DIR
+root@3a48af5eaec9:~# exit
