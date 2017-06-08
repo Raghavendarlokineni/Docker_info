@@ -1,0 +1,85 @@
+
+The following procedure will  build an image through Docker API.
+
+Sample Dockerfile:
+
+# cat Dockerfile
+
+FROM ubuntu:14.04
+RUN mkdir demo
+RUN apt-get update
+RUN apt-get -y install vim
+
+Create a tar file which includes your Dockerfile.
+
+# tar -cvf Dockerfile.tar.gz Dockerfile 
+Execute the API as below and for more options, refer this.
+
+# curl -v -X POST -H "Content-Type:application/tar" --data-binary '@Dockerfile.tar.gz' http://127.0.0.1:5000/build?t=build_test
+
+* Hostname was NOT found in DNS cache
+*   Trying 127.0.0.1...
+* Connected to 127.0.0.1 (127.0.0.1) port 5000 (#0)
+> POST /build?t=build_test HTTP/1.1
+> User-Agent: curl/7.35.0
+> Host: 127.0.0.1:5000
+> Accept: */*
+> Content-Type:application/tar
+> Content-Length: 10240
+> Expect: 100-continue
+> 
+< HTTP/1.1 100 Continue
+< HTTP/1.1 200 OK
+< Api-Version: 1.28
+< Content-Type: application/json
+< Docker-Experimental: false
+< Ostype: linux
+* Server Docker/17.04.0-ce (linux) is not blacklisted
+< Server: Docker/17.04.0-ce (linux)
+< Date: Mon, 01 May 2017 09:56:54 GMT
+< Transfer-Encoding: chunked
+< 
+{"stream":"Step 1/4 : FROM ubuntu:14.04\n"}
+{"stream":" ---\u003e 302fa07d8117\n"}
+{"stream":"Step 2/4 : RUN mkdir demo\n"}
+{"stream":" ---\u003e Running in 5941f911099e\n"}
+{"stream":" ---\u003e bccbffdd776a\n"}
+{"stream":"Removing intermediate container 5941f911099e\n"}
+{"stream":"Step 3/4 : RUN apt-get update\n"}
+{"stream":" ---\u003e Running in 7aefd190a165\n"}
+{"stream":"Ign http://archive.ubuntu.com trusty InRelease\n"}
+{"stream":"Get:1 http://archive.ubuntu.com trusty-updates InRelease [65.9 kB]\n"}
+{"stream":"Get:2 http://archive.ubuntu.com trusty-security InRelease [65.9 kB]\n"}
+{"stream":"Get:3 http://archive.ubuntu.com trusty Release.gpg [933 B]\n"}
+{"stream":"Get:4 http://archive.ubuntu.com trusty Release [58.5 kB]\n"}
+{"stream":"Get:5 http://archive.ubuntu.com trusty-updates/main Sources [491 kB]\n"}
+{"stream":"Get:6 http://archive.ubuntu.com trusty-updates/restricted Sources [6467 B]\n"}
+{"stream":"Get:7 http://archive.ubuntu.com trusty-updates/universe Sources [226 kB]\n"}
+
+.......    
+
+{"stream":"Fetched 22.5 MB in 1min 40s (224 kB/s)\nReading package lists..."}
+{"stream":"\n"}
+{"stream":" ---\u003e ff06741dea7e\n"}
+{"stream":"Removing intermediate container 7aefd190a165\n"}
+{"stream":"Step 4/4 : RUN apt-get -y install vim\n"}
+{"stream":" ---\u003e Running in e9ddad5a4695\n"}
+{"stream":"Reading package lists..."}
+{"stream":"\n"}
+{"stream":"Building dependency tree..."}
+{"stream":"\nReading state information...\n"}
+{"stream":"The following extra packages will be installed:\n  libgpm2 libpython2.7 libpython2.7-minimal libpython2.7-stdlib vim-runtime\n"}
+{"stream":"Suggested packages:\n  gpm ctags vim-doc vim-scripts\n"}
+{"stream":"The following NEW packages will be installed:\n  libgpm2 libpython2.7 libpython2.7-minimal libpython2.7-stdlib vim\n  vim-runtime\n"}
+{"stream":"0 upgraded, 6 newly installed, 0 to remove and 3 not upgraded.\nNeed to get 9074 kB of archives.\nAfter this operation, 42.9 MB of additional disk space will be used.\nGet:1 http://archive.ubuntu.com/ubuntu/ trusty/main libgpm2 amd64 1.20.4-6.1 [16.5 kB]\n"}
+ .......
+{"stream":"Processing triggers for libc-bin (2.19-0ubuntu6.11) ...\n"}
+{"stream":" ---\u003e b1736dd9b698\n"}
+{"stream":"Removing intermediate container e9ddad5a4695\n"}
+{"stream":"Successfully built b1736dd9b698\n"}
+* Connection #0 to host 127.0.0.1 left intact
+Check the docker images after the image is successfully built.
+
+# docker images
+REPOSITORY                       TAG                 IMAGE ID            CREATED             SIZE
+build_test                       latest              b1736dd9b698        8 seconds ago  
