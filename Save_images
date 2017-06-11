@@ -1,0 +1,44 @@
+#How to save the docker images
+
+Docker images can be stored in 2 ways
+1) Save as tar file
+
+  # docker save -o ubuntu.tar.gz ubuntu:15.0
+  # ls -ltr ubuntu.tar.gz 
+  -rw------- 1 root root 197146624 Jun  8 00:43 ubuntu.tar.gz
+An image will be loaded from a tar file, if the image is not present locally. Hence to verify
+remove the image.
+
+  # docker rmi -f ubuntu:15.0 
+  Untagged: ubuntu:15.0
+
+Load the image using docker load:
+
+  # docker load -i ubuntu.tar.gz
+  Loaded image: ubuntu:15.0
+
+2) Pusing to it to the repository : https://hub.docker.com/
+
+The image should be tag in an appropriate way, i.e image should named as <repositoryname>/<imagename>.
+<repositoryname> : Repository name created in the Docker hub.
+<imagename> : Image name in your local repository
+
+Rename the image accordingly:
+  # docker tag ubuntu:15.0 raghavendar/ubuntu:15.0
+  root@labadmin-VirtualBox:~/RAGHU/python/docker_cont/isolator# docker images
+  REPOSITORY           TAG                 IMAGE ID            CREATED             SIZE
+  so                   1.0                 2f91aa2eba71        4 days ago          366MB
+  ubuntu               15.0                acac1f3733b2        4 days ago          188MB
+  raghavendar/ubuntu   15.0                acac1f3733b2        4 days ago          188MB
+
+Push the image to the repository:
+
+  # docker push raghavendar/ubuntu:15.0 
+  The push refers to a repository [docker.io/raghavendar/ubuntu]
+  6528a6caa807: Pushed 
+  7bf04ad1d006: Mounted from library/ubuntu 
+  023b7696bd58: Mounted from library/ubuntu 
+  ad37eb38337a: Mounted from library/ubuntu 
+  350bf4dddc59: Mounted from library/ubuntu 
+  554f627f09ee: Mounted from library/ubuntu 
+  15.0: digest: sha256:6c3856d8d55c6b5e16e863a04cdce36f937d4c3c6d8203e0a60bb01010286b04 size: 1566
